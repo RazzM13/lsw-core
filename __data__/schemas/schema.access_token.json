@@ -1,0 +1,48 @@
+{
+  "$id": "schema.access_token.json",
+  "title": "AccessToken",
+  "type": "object",
+  "properties": {
+    "iss": {
+      "type": "string",
+      "title": "Server public key",
+      "description": "Ensures server node identity and response integrity."
+    },
+    "sub": {
+      "type": "string",
+      "title": "Client public key",
+      "description": "Ensures client node identity and request integrity."
+    },
+    "aud": {
+      "type": "object",
+      "properties": {
+        "access": { "$ref": "schema.auth_init_options.json#/definitions/accessPermissionsKey" },
+        "query": { "$ref": "schema.auth_init_options.json#/definitions/queryPermissionsKey" },
+        "request": { "$ref": "schema.auth_init_options.json#/definitions/requestPermissionsKey" }
+      },
+      "additionalProperties": false,
+      "title": "LSW permissions"
+    },
+    "exp": {
+      "type": "integer", "minimum": 0 ,
+      "title": "JWT expiration timestamp",
+      "description": "Allows time based access control."
+    },
+    "nbf": {
+      "type": "integer", "minimum": 0,
+      "title": "JWT not-before timestamp",
+      "description": "Allows time based access control."
+    },
+    "iat": {
+      "type": "integer", "minimum": 0,
+      "title": "JWT creation timestamp",
+      "description": "Prevents replay attacks by refusing to honor requests that are older than N seconds."
+    },
+    "jti": {
+      "type": "string",
+      "title": "JWT ID",
+      "description": "Provides channel accountability."
+    }
+  },
+  "additionalProperties": false
+}

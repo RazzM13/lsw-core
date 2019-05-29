@@ -1,0 +1,16 @@
+{
+  "$id": "schema.access_response.json",
+  "title": "AccessResponse",
+  "type": "object",
+  "properties": {
+    "iss": { "$ref": "schema.access_token.json#/properties/iss" },
+    "sub": { "$ref": "schema.access_token.json#/properties/sub" },
+    "aud": { "$ref": "schema.access_token.json#/properties/aud" },
+    "exp": { "$ref": "schema.access_token.json#/properties/exp" },
+    "nbf": { "$ref": "schema.access_token.json#/properties/nbf" },
+    "iat": { "$ref": "schema.access_token.json#/properties/iat" },
+    "jti": { "$ref": "schema.access_token.json#/properties/jti" }
+  },
+  "additionalProperties": false,
+  "required": []
+}

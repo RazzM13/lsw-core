@@ -1,0 +1,11 @@
+{
+  "$id": "schema.dalquery_findqueryitem.json",
+  "title": "DalQueryFindQueryItem",
+  "type": "object",
+  "properties": {
+    "op": { "type": "string", "const": "find" },
+    "query": { "$ref": "schema.dal_params.json#/properties/query" }
+  },
+  "additionalProperties": false,
+  "required": ["op", "query"]
+}

@@ -1,0 +1,140 @@
+{
+  "$id": "schema.cachestore_params.json",
+  "title": "CachestoreParams",
+  "definitions": {
+    "geohashAscentQuery": {
+      "type": "object",
+      "properties": {
+        "query": { "type": "string", "const": "ascent" },
+        "params": {
+          "type": "object",
+          "properties": {
+            "minDepth": { "type": "integer", "minimum": 1, "maximum": 10 },
+            "maxDepth": { "type": "integer", "minimum": 1, "maximum": 10 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": ["query", "params"]
+    },
+    "geohashDescentQuery": {
+      "type": "object",
+      "properties": {
+        "query": { "type": "string", "const": "descent" },
+        "params": {
+          "type": "object",
+          "properties": {
+            "minDepth": { "type": "integer", "minimum": 1, "maximum": 10 },
+            "maxDepth": { "type": "integer", "minimum": 1, "maximum": 10 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": ["query", "params"]
+    },
+    "geohashPerimeterQuery": {
+      "type": "object",
+      "properties": {
+        "query": { "type": "string", "const": "perimeter" },
+        "params": {
+          "type": "object",
+          "properties": {
+            "padding": { "type": "integer", "minimum": 0, "maximum": 4 },
+            "includePadding": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": ["query", "params"]
+    },
+    "timestampFilters": {
+      "type": "object",
+      "properties": {
+        "$ne":  { "type": "integer" },
+        "$lt":  { "type": "integer", "minimum": 0 },
+        "$lte": { "type": "integer", "minimum": 0 },
+        "$gt":  { "type": "integer", "minimum": 0 },
+        "$gte": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "exclusionFilters": {
+      "type": "object",
+      "properties": {
+        "$in": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "$nin": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "primitiveQueryInterface": {
+      "type": "object",
+      "properties": {
+        "keyID": { "type": "string" },
+        "id": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "complexQueryInterface": {
+      "type": "object",
+      "properties": {
+        "$limit":  { "type": "integer", "minimum": 0 },
+        "$skip":   { "type": "integer", "minimum": 0 },
+        "$select": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["id", "keyID", "metadata", "metadataSignature", "contents", "contentsSignature"] }
+        },
+        "$noSignatureValidation": { "type": "boolean" },
+        "keyID": { "$ref": "#/definitions/exclusionFilters" },
+        "id": { "$ref": "#/definitions/exclusionFilters" },
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "type":       { "$ref": "#/definitions/exclusionFilters" },
+            "createdAt":  { "$ref": "#/definitions/timestampFilters" },
+            "modifiedAt": { "$ref": "#/definitions/timestampFilters" },
+            "expiresAt":  { "$ref": "#/definitions/timestampFilters" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "properties": {
+    "query": {
+      "type": "object",
+      "properties": {
+        "$limit": { "$ref": "#/definitions/complexQueryInterface/properties/$limit" },
+        "$skip": { "$ref": "#/definitions/complexQueryInterface/properties/$skip" },
+        "$select": { "$ref": "#/definitions/complexQueryInterface/properties/$select" },
+        "$noSignatureValidation": { "$ref": "#/definitions/complexQueryInterface/properties/$noSignatureValidation" },
+        "keyID": {
+          "anyOf": [
+            { "$ref": "#/definitions/primitiveQueryInterface/properties/keyID" },
+            { "$ref": "#/definitions/complexQueryInterface/properties/keyID" }
+          ]
+        },
+        "id": {
+          "anyOf": [
+            { "$ref": "#/definitions/primitiveQueryInterface/properties/id" },
+            { "$ref": "#/definitions/complexQueryInterface/properties/id" }
+          ]
+        },
+        "metadata": { "$ref": "#/definitions/complexQueryInterface/properties/metadata" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true,
+  "required": ["query"]
+}

@@ -1,0 +1,17 @@
+{
+  "$id": "schema.cachestore_create_params.json",
+  "title": "CachestoreCreateParams",
+  "type": "object",
+  "properties": {
+    "query": {
+      "type": "object",
+      "properties": {
+        "keyID": { "$ref": "schema.cachestore_params.json#/definitions/primitiveQueryInterface/properties/keyID" },
+        "$noSignatureValidation": { "$ref": "schema.cachestore_params.json#/definitions/complexQueryInterface/properties/$noSignatureValidation" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true,
+  "required": ["query"]
+}

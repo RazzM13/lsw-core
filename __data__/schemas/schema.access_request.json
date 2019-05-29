@@ -1,0 +1,31 @@
+{
+  "$id": "schema.access_request.json",
+  "title": "AccessRequest",
+  "type": "object",
+  "properties": {
+    "sub": { "$ref": "schema.access_token.json#/properties/sub" },
+    "aud": {
+      "type": "object",
+      "properties": {
+        "access": { "$ref": "schema.access_token.json#/properties/aud/properties/access" },
+        "query": { "$ref": "schema.access_token.json#/properties/aud/properties/query" },
+        "request": { "$ref": "schema.access_token.json#/properties/aud/properties/request" }
+      },
+      "additionalProperties": false,
+      "title": "LSW permissions",
+      "required": ["access"]
+    },
+    "exp": {
+      "type": ["integer", "string"],
+      "minimum": 0,
+      "pattern": "^(now)|([+-](\\d+\\w+))|(\\d+)$"
+    },
+    "nbf": {
+      "type": ["integer", "string"],
+      "minimum": 0,
+      "pattern": "^(now)|([+-](\\d+\\w+))|(\\d+)$"
+    }
+  },
+  "additionalProperties": false,
+  "required": ["sub"]
+}

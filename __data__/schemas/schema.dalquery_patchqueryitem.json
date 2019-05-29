@@ -1,0 +1,12 @@
+{
+  "$id": "schema.dalquery_patchqueryitem.json",
+  "title": "DalQueryPatchQueryItem",
+  "type": "object",
+  "properties": {
+    "op": { "type": "string", "const": "patch" },
+    "query": { "$ref": "schema.dal_params.json#/properties/query" },
+    "data": { "$ref": "schema.cache_base.json" }
+  },
+  "additionalProperties": false,
+  "required": ["op", "query", "data"]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "{{pubKeyID}}",
+  "keyID": "{{pubKeyID}}",
+	"metadata": {
+		"type": "lsw://schemas@LSW/{{pubKeyID}}/PublicKeyCacheSchema",
+		"title": "Implicit Public Key",
+		"summary": "The key that is used to validate all caches within the LSW scope.",
+		"permissions": {}
+	},
+	"contents": {
+    "key": "{{{pubKeyPEM}}}",
+    "algorithm": "{{pubKeyAlgo}}",
+    "sibling": "lsw://keys@LSW/{{pubKeyID}}/{{secKeyID}}"
+	}
+}

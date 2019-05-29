@@ -1,0 +1,15 @@
+browserconfig.xml - <meta name="msapplication-config" content="ieconfig.xml" />
+favicon.ico - <link rel="icon" href="/favicon.ico">
+icon.png - <link rel="apple-touch-icon" href="icon.png">
+*.css - <link rel="stylesheet" href="css/normalize.css">
+humans.txt - <link type="text/plain" rel="author" href="http://domain/humans.txt" />
+robots.txt - USE ALTERNATE META TAGS
+license.txt - <link rel="stylesheet" href="/license.txt">
+
+site.webmanifest - <link rel="manifest" href="/site.webmanifest">
+
+MAIN
+CONFIG
+ASSETS
+README
+LICENSE

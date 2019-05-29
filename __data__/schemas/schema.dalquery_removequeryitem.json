@@ -1,0 +1,11 @@
+{
+  "$id": "schema.dalquery_removequeryitem.json",
+  "title": "DalQueryRemoveQueryItem",
+  "type": "object",
+  "properties": {
+    "op": { "type": "string", "const": "remove" },
+    "query": { "$ref": "schema.dal_params.json#/properties/query" }
+  },
+  "additionalProperties": false,
+  "required": ["op", "query"]
+}

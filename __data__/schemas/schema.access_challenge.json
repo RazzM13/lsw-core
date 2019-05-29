@@ -1,0 +1,25 @@
+{
+  "$id": "schema.access_challenge.json",
+  "title": "AccessChallenge",
+  "type": "object",
+  "properties": {
+    "sub": {
+      "type": "string",
+      "title": "Request hash value",
+      "description": "Ensures request integrity."
+    },
+    "iat": {
+      "type": "integer",
+      "minimum": 0,
+      "title": "JWT creation timestamp",
+      "description": "Prevents replay attacks by refusing to honor requests that are older than N seconds."
+    },
+    "auth": {
+      "$ref": "schema.access_response.json",
+      "title": "Authentication response token",
+      "description": "Provides proof of prior authentication and authorization credentials."
+    }
+  },
+  "additionalProperties": false,
+  "required": ["sub", "iat", "auth"]
+}

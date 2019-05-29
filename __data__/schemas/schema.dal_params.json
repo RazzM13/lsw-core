@@ -1,0 +1,18 @@
+{
+  "$id": "schema.dal_params.json",
+  "title": "DalParams",
+  "type": "object",
+  "properties": {
+    "query": {
+      "type": "object",
+      "properties": {
+        "scope": { "type": "string", "default": "PUBLIC" },
+        "partition": { "type": "string" }
+      },
+      "additionalProperties": true,
+      "required": ["scope", "partition"]
+    }
+  },
+  "additionalProperties": true,
+  "required": ["query"]
+}

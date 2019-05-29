@@ -1,0 +1,27 @@
+{
+  "id": "PATCHCACHESCHEMA",
+  "keyID": "{{pubKeyID}}",
+	"metadata": {
+		"type": "lsw://schemas@LSW/{{pubKeyID}}/SchemaCacheSchema",
+		"title": "PatchCache JSON schema",
+		"summary": "A JSON schema that all PatchCaches must adhere to.",
+		"permissions": {}
+	},
+	"contents": {
+    "schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "lsw://schemas@LSW/{{pubKeyID}}/PatchCacheSchema#schema",
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string"
+        },
+        "patch": {
+          "$ref": "http://json.schemastore.org/json-patch"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["target", "patch"]
+    }
+	}
+}

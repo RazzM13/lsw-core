@@ -1,0 +1,998 @@
+swagger: '2.0'
+info:
+  description: Local Semantic Web
+  version: "0.2.1"
+  title: LSW
+  contact:
+    email: r@m13.ro
+
+produces:
+  - "application/json"
+
+consumes:
+  - "application/json"
+
+securityDefinitions:
+  api_key:
+    type: "apiKey"
+    name: "x-api-key"
+    in: "header"
+
+definitions:
+  CacheResultsOffsetPagination:
+    type: object
+    properties:
+      results:
+        description: The caches matching the desired criteria.
+        type: array
+        items:
+          type: object
+
+      results_count:
+        description: The total number of matching caches.
+        type: integer
+        default: 0
+        minimum: 0
+
+      results_limit:
+        description: The maximum number of retrievable results for this request.
+        type: integer
+        default: 0
+        minimum: 0
+
+      results_offset:
+        description: The number of results that will be skipped before the next result-set is generated.
+        type: integer
+        default: 0
+        minimum: 0
+
+  CachePermissionPaths:
+    type: array
+    items:
+      type: string
+
+  CachePermissions:
+    type: object
+    properties:
+      add:
+        $ref: "#/definitions/CachePermissionPaths"
+      remove:
+        $ref: "#/definitions/CachePermissionPaths"
+      replace:
+        $ref: "#/definitions/CachePermissionPaths"
+      copy:
+        $ref: "#/definitions/CachePermissionPaths"
+      move:
+        $ref: "#/definitions/CachePermissionPaths"
+      test:
+        $ref: "#/definitions/CachePermissionPaths"
+    description: A mapping of operations and applicable paths.
+
+  CacheAuthorizations:
+    type: object
+    description: Mapping of authorized keys and permitted operations.
+    additionalProperties:
+      $ref: "#/definitions/CachePermissions"
+
+  GeoCache:
+    type: object
+    properties:
+      metadata:
+        description: "Meta-information about the cache."
+        type: object
+        properties:
+          type:
+            description: "The schema used to organize and validate the cache's data."
+            type: string
+            # example: '//schemas/LSW/RawCache'
+          title:
+            description: "A name given to the cache."
+            type: string
+          summary:
+            description: "A short description of the cache."
+            type: string
+          permissions:
+            $ref: "#/definitions/CacheAuthorizations"
+          created_at:
+            description: "The UNIX-timestamp of the moment when the cache was created."
+            type: integer
+          modified_at:
+            description: "The UNIX-timestamp of the moment when the cache was last modified."
+            type: integer
+          signature:
+            description: "The Base64-encoded signed hash value of the cache's metadata and contents."
+            type: string
+      contents:
+        description: "The cache's data."
+        type: object
+
+  GlobalCache:
+    $ref: "#/definitions/GeoCache"
+
+  KeyCache:
+    allOf:
+      - $ref: "#/definitions/GeoCache"
+      - properties:
+          metadata:
+            properties:
+              type:
+                enum: ["//schemas/LSW/KeyCache"]
+
+  AppCache:
+    allOf:
+      - $ref: "#/definitions/GeoCache"
+      - properties:
+          metadata:
+            properties:
+              type:
+                enum: ["//schemas/LSW/AppCache"]
+
+  SchemaCache:
+    allOf:
+      - $ref: "#/definitions/GeoCache"
+      - properties:
+          metadata:
+            properties:
+              type:
+                enum: ["//schemas/LSW/SchemaCache"]
+
+  GeoCacheParam:
+    type: object
+    properties:
+      metadata:
+        description: "Meta-information about the cache."
+        type: object
+        properties:
+          type:
+            description: "Schema used to organize and validate the cache's data."
+            type: string
+            # example: '//schemas/LSW/RawCache'
+
+          visibility:
+            description: "If the cache should be publicly accessible or not."
+            type: string
+            enum: ["public", "private"]
+
+      contents:
+        description: "The cache's data."
+        type: object
+
+  KeyCacheParam:
+    allOf:
+      - $ref: "#/definitions/GeoCacheParam"
+      - properties:
+          metadata:
+            properties:
+              type:
+                enum: ["//schemas/LSW/KeyCache"]
+
+  GlobalCacheParam:
+    $ref: "#/definitions/GeoCacheParam"
+
+  AppCacheParam:
+    allOf:
+      - $ref: "#/definitions/GeoCacheParam"
+      - properties:
+          metadata:
+            properties:
+              type:
+                enum: ["//schemas/LSW/AppCache"]
+
+  SchemaCacheParam:
+    allOf:
+      - $ref: "#/definitions/GeoCacheParam"
+      - properties:
+          metadata:
+            properties:
+              type:
+                enum: ["//schemas/LSW/SchemaCache"]
+
+parameters:
+  PublicKeyIDPathParam:
+    description: ID of a specific user.
+    name: publicKeyID
+    in: path
+    required: true
+    type: string
+  CacheIDPathParam:
+    description: ID of a specific cache.
+    name: cacheID
+    in: path
+    required: true
+    type: string
+  GeohashPathParam:
+    description: GeoHash-36 geocoded location.
+    name: geohash
+    in: path
+    required: true
+    type: string
+  LocationPathParam:
+    description: URL-safe textual representation of GPS coordinates, postal address, Geohash-24.
+    name: location
+    in: path
+    required: true
+    type: string
+  KeyCacheBodyParam:
+    description: Request object for creating a new cache in the KEYS namespace.
+    name: keycache
+    in: body
+    required: true
+    schema:
+      $ref: "#/definitions/KeyCacheParam"
+  GlobalCacheBodyParam:
+    description: Request object for creating a new cache in the GLOBALS namespace.
+    name: globalcache
+    in: body
+    required: true
+    schema:
+      $ref: "#/definitions/GlobalCacheParam"
+  AppCacheBodyParam:
+    description: Request object for creating a new cache in the APPS namespace.
+    name: appcache
+    in: body
+    required: true
+    schema:
+      $ref: "#/definitions/AppCacheParam"
+  SchemaCacheBodyParam:
+    description: Request object for creating a new cache in the SCHEMAS namespace.
+    name: schemacache
+    in: body
+    required: true
+    schema:
+      $ref: "#/definitions/SchemaCacheParam"
+  GeoCacheBodyParam:
+    description: Request object for creating a new cache at a given geographic location.
+    name: geocache
+    in: body
+    required: true
+    schema:
+      $ref: "#/definitions/GeoCacheParam"
+
+responses:
+  "CacheCreated":
+    description: "CREATED - A new cache has been created."
+    headers:
+      Location:
+        type: string
+        description: "URL address of the newly created cache."
+  "NoSuchUser":
+    description: "NOT FOUND - The specified user does not exist."
+  "NoSuchCache":
+    description: "NOT FOUND - The specified cache does not exist."
+  "NoSuchLocation":
+    description: "NOT FOUND - The specified location is ambiguous."
+  "NoListPermission":
+    description: "FORBIDDEN - No permission to list caches in the specified location."
+  "NoAccessPermission":
+    description: "FORBIDDEN - No permission to access the specified cache."
+  "NoCreatePermission":
+    description: "FORBIDDEN - No permission to create a new cache in the specified location."
+  "NoUpdatePermission":
+    description: "FORBIDDEN - No permission to update the specified cache."
+  "NoDeletePermission":
+    description: "FORBIDDEN - No permission to delete the specified cache."
+  "InvalidJSON":
+    description: "BAD REQUEST - Request body is not a valid JSON."
+  "InvalidMediaType":
+    description: "UNSUPPORTED MEDIA-TYPE"
+  "InvalidFormat":
+    description: "CONFLICT - Incompatible cache format, does not match the specified cache's schema."
+  "NotAuthorized":
+    description: "NOT AUTHORIZED - Authorization header is missing or is invalid."
+
+x-aws-support:
+  handlers:
+    GeocodingHandler:
+      responses:
+        default:
+          statusCode: "400"
+      uri: "arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:898617613272:function:GeocodingHandler/invocations"
+      credentials: "arn:aws:iam::898617613272:role/LSW_API_PUBLIC"
+      passthroughBehavior: "when_no_match"
+      httpMethod: "POST"
+      contentHandling: "CONVERT_TO_TEXT"
+      type: "aws_proxy"
+    SchemaHandler:
+      responses:
+        default:
+          statusCode: "400"
+      uri: "arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:898617613272:function:SchemaHandler/invocations"
+      credentials: "arn:aws:iam::898617613272:role/LSW_API_PUBLIC"
+      passthroughBehavior: "when_no_match"
+      httpMethod: "POST"
+      contentHandling: "CONVERT_TO_TEXT"
+      type: "aws_proxy"
+    CacheHandler:
+      responses:
+        default:
+          statusCode: "400"
+      uri: "arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:898617613272:function:CacheHandler/invocations"
+      credentials: "arn:aws:iam::898617613272:role/LSW_API_PUBLIC"
+      passthroughBehavior: "when_no_match"
+      httpMethod: "POST"
+      contentHandling: "CONVERT_TO_TEXT"
+      type: "aws_proxy"
+    KeyCacheHandler:
+      $ref: "#/x-aws-support/handlers/CacheHandler"
+    GlobalCacheHandler:
+      $ref: "#/x-aws-support/handlers/CacheHandler"
+    AppCacheHandler:
+      $ref: "#/x-aws-support/handlers/CacheHandler"
+    GeoCacheHandler:
+      $ref: "#/x-aws-support/handlers/CacheHandler"
+
+paths:
+  /geocode/{location}:
+    parameters:
+      - $ref: "#/parameters/LocationPathParam"
+
+    get:
+      summary: "Resolves a given location (i.e. GPS coordinates, postal address, locality, etc.) to a set of Geohash-36 addresses."
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/GeocodingHandler"
+
+
+  /{geohash}:
+    parameters:
+      - $ref: "#/parameters/GeohashPathParam"
+
+    get:
+      summary: "Returns a shallow list of all GeoCaches that are located within the specified location."
+      tags:
+      - "Geo caches"
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/CacheResultsOffsetPagination"
+        404:
+          $ref: "#/responses/NoSuchLocation"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/GeoCacheHandler"
+
+
+  /{geohash}/{publicKeyID}:
+    parameters:
+      - $ref: "#/parameters/GeohashPathParam"
+      - $ref: "#/parameters/PublicKeyIDPathParam"
+
+    get:
+      summary: "Returns a shallow list of all GeoCaches that are located within the specified location that belong to the specified user."
+      tags:
+      - "Geo caches"
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/CacheResultsOffsetPagination"
+        404:
+          $ref: "#/responses/NoSuchLocation"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/GeoCacheHandler"
+
+    post:
+      summary: "Creates a new GeoCache in the specified location."
+      tags:
+      - "Geo caches"
+      security:
+      - api_key: []
+      consumes:
+        - 'application/schema-instance+json; schema="//schemas/{publicKeyID}/{SCHEMA_ID}"'
+      parameters:
+        - $ref: "#/parameters/GeoCacheBodyParam"
+      responses:
+        201:
+          $ref: "#/responses/CacheCreated"
+        400:
+          $ref: "#/responses/InvalidJSON"
+        404:
+          $ref: "#/responses/NoSuchLocation"
+        409:
+          $ref: "#/responses/InvalidFormat"
+        415:
+          $ref: "#/responses/InvalidMediaType"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/GeoCacheHandler"
+
+
+  /{geohash}/{publicKeyID}/{cacheID}:
+    parameters:
+      - $ref: "#/parameters/GeohashPathParam"
+      - $ref: "#/parameters/PublicKeyIDPathParam"
+      - $ref: "#/parameters/CacheIDPathParam"
+
+    get:
+      summary: "Returns the GeoCache's content."
+      tags:
+      - "Geo caches"
+      produces:
+        - 'application/schema-instance+json; schema="//schemas/{publicKeyID}/{SCHEMA_ID}"'
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        403:
+          $ref: "#/responses/NoAccessPermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/GeoCacheHandler"
+
+    put:
+      summary: "Initializes or updates the GeoCache's content."
+      tags:
+      - "Geo caches"
+      consumes:
+        - 'application/schema-instance+json; schema="//schemas/{publicKeyID}/{SCHEMA_ID}"'
+      parameters:
+        - $ref: "#/parameters/GeoCacheBodyParam"
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        400:
+          $ref: "#/responses/InvalidJSON"
+        403:
+          $ref: "#/responses/NoUpdatePermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+        409:
+          $ref: "#/responses/InvalidFormat"
+        415:
+          $ref: "#/responses/InvalidMediaType"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/GeoCacheHandler"
+
+    delete:
+      summary: "Removes the GeoCache."
+      tags:
+      - "Geo caches"
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        403:
+          $ref: "#/responses/NoDeletePermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/GeoCacheHandler"
+
+    options:
+      summary: "Returns the GeoCaches's metadata."
+      tags:
+      - "Geo caches"
+      produces:
+        - 'application/schema+json'
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        403:
+          $ref: "#/responses/NoAccessPermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/GeoCacheHandler"
+
+
+  /keys/{publicKeyID}:
+    parameters:
+      - $ref: "#/parameters/PublicKeyIDPathParam"
+
+    get:
+      summary: "Returns a shallow list of all KeyCaches that belong to the specified user."
+      tags:
+      - "Key caches"
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/CacheResultsOffsetPagination"
+        403:
+          $ref: "#/responses/NoListPermission"
+        404:
+          $ref: "#/responses/NoSuchUser"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/KeyCacheHandler"
+
+    post:
+      summary: "Creates a new cache in the KEYS namespace for the specified user."
+      tags:
+      - "Key caches"
+      parameters:
+        - $ref: "#/parameters/KeyCacheBodyParam"
+      security:
+      - api_key: []
+      responses:
+        201:
+          $ref: "#/responses/CacheCreated"
+        400:
+          $ref: "#/responses/InvalidJSON"
+        403:
+          $ref: '#/responses/NoCreatePermission'
+        404:
+          $ref: "#/responses/NoSuchUser"
+        409:
+          $ref: "#/responses/InvalidFormat"
+        415:
+          $ref: "#/responses/InvalidMediaType"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/KeyCacheHandler"
+
+
+  /keys/{publicKeyID}/{cacheID}:
+    parameters:
+      - $ref: "#/parameters/PublicKeyIDPathParam"
+      - $ref: "#/parameters/CacheIDPathParam"
+
+    get:
+      summary: "Returns the KeyCache's content."
+      tags:
+      - "Key caches"
+      produces:
+        - 'application/schema+json'
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        403:
+          $ref: "#/responses/NoAccessPermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/KeyCacheHandler"
+
+    put:
+      summary: "Initializes or updates the KeyCache's content."
+      tags:
+      - "Key caches"
+      consumes:
+        - 'application/schema-instance+json; schema="//schemas/{publicKeyID}/{SCHEMA_ID}"'
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        400:
+          $ref: "#/responses/InvalidJSON"
+        403:
+          $ref: "#/responses/NoUpdatePermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+        409:
+          $ref: "#/responses/InvalidFormat"
+        415:
+          $ref: "#/responses/InvalidMediaType"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/KeyCacheHandler"
+
+    delete:
+      summary: "Removes the KeyCache."
+      tags:
+      - "Key caches"
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        403:
+          $ref: "#/responses/NoDeletePermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/KeyCacheHandler"
+
+    options:
+      summary: "Returns the KeyCache's metadata."
+      tags:
+      - "Key caches"
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        403:
+          $ref: "#/responses/NoAccessPermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/KeyCacheHandler"
+
+
+  /schemas/{publicKeyID}:
+    parameters:
+      - $ref: "#/parameters/PublicKeyIDPathParam"
+
+    get:
+      summary: "Returns a shallow list of all SchemaCaches that belong to the specified user."
+      tags:
+      - "Schema caches"
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/CacheResultsOffsetPagination"
+        403:
+          $ref: "#/responses/NoListPermission"
+        404:
+          $ref: "#/responses/NoSuchUser"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/SchemaHandler"
+
+    post:
+      summary: "Creates a new cache in the SCHEMAS namespace for the specified user."
+      tags:
+      - "Schema caches"
+      parameters:
+        - $ref: "#/parameters/SchemaCacheBodyParam"
+      security:
+      - api_key: []
+      responses:
+        201:
+          $ref: "#/responses/CacheCreated"
+        400:
+          $ref: "#/responses/InvalidJSON"
+        403:
+          $ref: '#/responses/NoCreatePermission'
+        404:
+          $ref: "#/responses/NoSuchUser"
+        409:
+          $ref: "#/responses/InvalidFormat"
+        415:
+          $ref: "#/responses/InvalidMediaType"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/SchemaHandler"
+
+
+  /schemas/{publicKeyID}/{cacheID}:
+    parameters:
+      - $ref: "#/parameters/PublicKeyIDPathParam"
+      - $ref: "#/parameters/CacheIDPathParam"
+
+    get:
+      summary: "Returns the SchemaCache's content."
+      tags:
+      - "Schema caches"
+      produces:
+        - 'application/schema+json'
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        403:
+          $ref: "#/responses/NoAccessPermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/SchemaHandler"
+
+    put:
+      summary: "Initializes or updates the SchemaCache's content."
+      tags:
+      - "Schema caches"
+      consumes:
+        - 'application/schema-instance+json; schema="//schemas/{publicKeyID}/{SCHEMA_ID}"'
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        400:
+          $ref: "#/responses/InvalidJSON"
+        403:
+          $ref: "#/responses/NoUpdatePermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+        409:
+          $ref: "#/responses/InvalidFormat"
+        415:
+          $ref: "#/responses/InvalidMediaType"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/GlobalCacheHandler"
+
+    delete:
+      summary: "Removes the SchemaCache."
+      tags:
+      - "Schema caches"
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        403:
+          $ref: "#/responses/NoDeletePermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/SchemaHandler"
+
+    options:
+      summary: "Returns the SchemaCache's metadata."
+      tags:
+      - "Schema caches"
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        403:
+          $ref: "#/responses/NoAccessPermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/SchemaHandler"
+
+
+  /apps/{publicKeyID}:
+    parameters:
+      - $ref: "#/parameters/PublicKeyIDPathParam"
+
+    get:
+      summary: "Returns a shallow list of all AppCaches that belong to the specified user."
+      tags:
+      - "App caches"
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/CacheResultsOffsetPagination"
+        403:
+          $ref: "#/responses/NoListPermission"
+        404:
+          $ref: "#/responses/NoSuchUser"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/AppCacheHandler"
+
+    post:
+      summary: "Creates a new cache in the APPS namespace for the specified user."
+      tags:
+      - "App caches"
+      parameters:
+        - $ref: "#/parameters/AppCacheBodyParam"
+      security:
+      - api_key: []
+      responses:
+        201:
+          $ref: "#/responses/CacheCreated"
+        400:
+          $ref: "#/responses/InvalidJSON"
+        403:
+          $ref: '#/responses/NoCreatePermission'
+        404:
+          $ref: "#/responses/NoSuchUser"
+        409:
+          $ref: "#/responses/InvalidFormat"
+        415:
+          $ref: "#/responses/InvalidMediaType"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/AppCacheHandler"
+
+
+  /apps/{publicKeyID}/{cacheID}:
+    parameters:
+      - $ref: "#/parameters/PublicKeyIDPathParam"
+      - $ref: "#/parameters/CacheIDPathParam"
+
+    get:
+      summary: "Returns the AppCache's content."
+      tags:
+      - "App caches"
+      produces:
+        - 'application/schema-instance+json; schema="//schemas/LSW/AppCache"'
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        403:
+          $ref: "#/responses/NoAccessPermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/AppCacheHandler"
+
+    put:
+      summary: "Initializes or updates the AppCache's content."
+      tags:
+      - "App caches"
+      consumes:
+        - 'application/schema-instance+json; schema="//schemas/LSW/AppCache"'
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        400:
+          $ref: "#/responses/InvalidJSON"
+        403:
+          $ref: "#/responses/NoUpdatePermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+        409:
+          $ref: "#/responses/InvalidFormat"
+        415:
+          $ref: "#/responses/InvalidMediaType"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/AppCacheHandler"
+
+    delete:
+      summary: "Removes the AppCache."
+      tags:
+      - "App caches"
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        403:
+          $ref: "#/responses/NoDeletePermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/AppCacheHandler"
+
+    options:
+      summary: "Returns the AppCache's metadata."
+      tags:
+      - "App caches"
+      produces:
+        - 'application/schema+json'
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        403:
+          $ref: "#/responses/NoAccessPermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/AppCacheHandler"
+
+
+  /globals/{publicKeyID}:
+    parameters:
+      - $ref: "#/parameters/PublicKeyIDPathParam"
+
+    get:
+      summary: "Returns a shallow list of all GlobalCaches that belong to the specified user."
+      tags:
+      - "Global caches"
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/CacheResultsOffsetPagination"
+        403:
+          $ref: "#/responses/NoListPermission"
+        404:
+          $ref: "#/responses/NoSuchUser"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/GlobalCacheHandler"
+
+    post:
+      summary: "Creates a new cache in the GLOBALS namespace for the specified user."
+      tags:
+      - "Global caches"
+      parameters:
+        - $ref: "#/parameters/GlobalCacheBodyParam"
+      security:
+      - api_key: []
+      responses:
+        201:
+          $ref: "#/responses/CacheCreated"
+        400:
+          $ref: "#/responses/InvalidJSON"
+        403:
+          $ref: '#/responses/NoCreatePermission'
+        404:
+          $ref: "#/responses/NoSuchUser"
+        409:
+          $ref: "#/responses/InvalidFormat"
+        415:
+          $ref: "#/responses/InvalidMediaType"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/GlobalCacheHandler"
+
+  /globals/{publicKeyID}/{cacheID}:
+    parameters:
+      - $ref: "#/parameters/PublicKeyIDPathParam"
+      - $ref: "#/parameters/CacheIDPathParam"
+
+    get:
+      summary: "Returns the GlobalCache's content."
+      tags:
+      - "Global caches"
+      produces:
+        - 'application/schema+json'
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        403:
+          $ref: "#/responses/NoAccessPermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/GlobalCacheHandler"
+
+    put:
+      summary: "Initializes or updates the GlobalCache's content."
+      tags:
+      - "Global caches"
+      consumes:
+        - 'application/schema-instance+json; schema="//schemas/{publicKeyID}/{SCHEMA_ID}"'
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        400:
+          $ref: "#/responses/InvalidJSON"
+        403:
+          $ref: "#/responses/NoUpdatePermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+        409:
+          $ref: "#/responses/InvalidFormat"
+        415:
+          $ref: "#/responses/InvalidMediaType"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/GlobalCacheHandler"
+
+    delete:
+      summary: "Removes the GlobalCache."
+      tags:
+      - "Global caches"
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        403:
+          $ref: "#/responses/NoDeletePermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/GlobalCacheHandler"
+
+    options:
+      summary: "Returns the GlobalCache's metadata."
+      tags:
+      - "Global caches"
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "OK"
+        403:
+          $ref: "#/responses/NoAccessPermission"
+        404:
+          $ref: "#/responses/NoSuchCache"
+      x-amazon-apigateway-integration:
+        $ref: "#/x-aws-support/handlers/GlobalCacheHandler"

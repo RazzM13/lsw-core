@@ -1,0 +1,45 @@
+{
+  "$id": "schema.cache_full.json",
+  "title": "CacheFull",
+  "type": "object",
+  "definitions": {
+    "listOfKeys": {
+      "type": ["array", "null"],
+      "items": {
+        "type": ["string", "null"],
+        "pattern": "^\\w+\/\\w+$"
+      }
+    }
+  },
+  "properties": {
+    "id": { "type": "string" },
+    "keyID": { "type": "string" },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string" },
+        "title": { "type": "string" },
+        "summary": { "type": "string" },
+        "permissions": {
+          "type": "object",
+          "properties": {
+            "access": { "$ref": "#/definitions/listOfKeys" },
+            "patch": { "$ref": "#/definitions/listOfKeys" }
+          },
+          "additionalProperties": false,
+          "required": ["access", "patch"]
+        },
+        "createdAt": { "type": "integer", "minimum": 0 },
+        "modifiedAt": { "type": "integer", "minimum": 0 },
+        "expiresAt": { "type": "integer", "minimum": -1 }
+      },
+      "additionalProperties": false,
+      "required": ["type", "title", "summary"]
+    },
+    "contents": { "type": "object" },
+    "metadataSignature": { "type": "string" },
+    "contentsSignature": { "type": "string" }
+  },
+  "additionalProperties": false,
+  "required": ["id", "keyID", "metadata", "contents"]
+}

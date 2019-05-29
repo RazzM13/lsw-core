@@ -1,0 +1,22 @@
+{
+  "$id": "schema.cachestore_find_params.json",
+  "title": "CachestoreFindParams",
+  "type": "object",
+  "properties": {
+    "query": {
+      "type": "object",
+      "properties": {
+        "$limit": { "$ref": "schema.cachestore_params.json#/properties/query/properties/$limit" },
+        "$skip": { "$ref": "schema.cachestore_params.json#/properties/query/properties/$skip" },
+        "$select": { "$ref": "schema.cachestore_params.json#/properties/query/properties/$select" },
+        "$noSignatureValidation": { "$ref": "schema.cachestore_params.json#/properties/query/properties/$noSignatureValidation" },
+        "keyID": { "$ref": "schema.cachestore_params.json#/properties/query/properties/keyID" },
+        "id": { "$ref": "schema.cachestore_params.json#/properties/query/properties/id" },
+        "metadata": { "$ref": "schema.cachestore_params.json#/properties/query/properties/metadata" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true,
+  "required": ["query"]
+}

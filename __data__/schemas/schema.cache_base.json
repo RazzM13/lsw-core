@@ -1,0 +1,15 @@
+{
+  "$id": "schema.cache_base.json",
+  "title": "CacheBase",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "schema.cache_full.json#/properties/id" },
+    "keyID": { "$ref": "schema.cache_full.json#/properties/keyID" },
+    "metadata": { "$ref": "schema.cache_full.json#/properties/metadata" },
+    "contents": { "$ref": "schema.cache_full.json#/properties/contents" },
+    "metadataSignature": { "$ref": "schema.cache_full.json#/properties/metadataSignature" },
+    "contentsSignature": { "$ref": "schema.cache_full.json#/properties/contentsSignature" }
+  },
+  "additionalProperties": false,
+  "required": ["metadata", "contents"]
+}

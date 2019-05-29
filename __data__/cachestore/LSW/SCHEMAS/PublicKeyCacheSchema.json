@@ -1,0 +1,31 @@
+{
+  "id": "PUBLICKEYCACHESCHEMA",
+  "keyID": "{{pubKeyID}}",
+	"metadata": {
+		"type": "lsw://schemas@LSW/{{pubKeyID}}/SchemaCacheSchema",
+		"title": "PublicKeyCache JSON schema",
+		"summary": "A JSON schema that all PublicKeyCaches must adhere to.",
+		"permissions": {}
+	},
+	"contents": {
+    "schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "lsw://schemas@LSW/{{pubKeyID}}/PublicKeyCacheSchema#schema",
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "algorithm": {
+          "type": "string"
+        },
+        "sibling": {
+          "type": "string",
+          "pattern": "^\\w+\/\\w+$"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["key", "algorithm", "sibling"]
+    }
+	}
+}

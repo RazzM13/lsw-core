@@ -1,0 +1,17 @@
+{
+  "$id": "schema.query_updatequeryitem.json",
+  "title": "DalQueryUpdateQueryItem",
+  "type": "object",
+  "properties": {
+    "op": { "type": "string", "const": "update" },
+    "query": { "$ref": "schema.dal_params.json#/properties/query" },
+    "data": {
+      "anyOf": [
+        { "$ref": "schema.cache_base.json" },
+        { "$ref": "schema.cache_full.json" }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": ["op", "query", "data"]
+}

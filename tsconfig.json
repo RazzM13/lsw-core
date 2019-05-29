@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "commonjs",
+        "outDir": "out",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "baseUrl": ".",
+        "paths": {
+          "@feathersjs/errors": [
+            "DefinitelyTyped/types/feathersjs__errors"
+          ],
+          "@feathersjs/authentication": [
+            "DefinitelyTyped/types/feathersjs__authentication"
+          ]
+        },
+        "typeRoots": [
+          "node_modules/@types",
+          "DefinitelyTyped/types/feathersjs__errors",
+          "DefinitelyTyped/types/feathersjs__authentication"
+        ],
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "__test__",
+        "node_modules"
+    ]
+}

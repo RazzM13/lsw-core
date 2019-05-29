@@ -1,0 +1,15 @@
+{
+  "$id": "schema.dalquery_data.json",
+  "title": "DalQueryData",
+  "type": "array",
+  "items": {
+    "anyOf": [
+      { "$ref": "schema.dalquery_findqueryitem.json" },
+      { "$ref": "schema.dalquery_getqueryitem.json" },
+      { "$ref": "schema.dalquery_createqueryitem.json" },
+      { "$ref": "schema.dalquery_updatequeryitem.json" },
+      { "$ref": "schema.dalquery_patchqueryitem.json" },
+      { "$ref": "schema.dalquery_removequeryitem.json" }
+    ]
+  }
+}

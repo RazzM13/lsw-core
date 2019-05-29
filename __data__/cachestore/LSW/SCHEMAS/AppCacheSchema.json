@@ -1,0 +1,48 @@
+{
+  "id": "APPCACHESCHEMA",
+  "keyID": "{{pubKeyID}}",
+	"metadata": {
+		"type": "lsw://schemas@LSW/{{pubKeyID}}/SchemaCacheSchema",
+		"title": "AppCache JSON schema",
+		"summary": "A JSON schema that all AppCaches must adhere to.",
+		"permissions": {}
+	},
+	"contents": {
+    "schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "lsw://schemas@LSW/{{pubKeyID}}/AppCacheSchema#schema",
+      "type": "object",
+      "definitions": {
+        "item": { "type": "string" },
+        "directory": {
+          "type": "object",
+          "additionalProperties": {
+            "anyOf": [
+              { "$ref": "#/definitions/item" },
+              { "$ref": "#/definitions/directory"}
+            ]
+          }
+        }
+      },
+      "properties": {
+        "main": {
+          "type": "string"
+        },
+        "config": {
+          "type": "object"
+        },
+        "assets": {
+          "$ref": "#/definitions/directory"
+        },
+        "readme": {
+          "type": "string"
+        },
+        "license": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["main"]
+    }
+	}
+}

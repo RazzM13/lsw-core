@@ -1,0 +1,165 @@
+{
+  "$id": "schema.auth_init_options.json",
+  "title": "AuthInitOptions",
+  "type": "object",
+  "definitions": {
+    "keyID": {
+      "type": "string",
+      "pattern": "^.*$"
+    },
+    "accessPermissionsRoute": {
+      "type": ["array", "boolean"],
+      "items": {
+        "type": "string",
+        "enum": ["find", "get", "create", "update", "patch", "remove"]
+      }
+    },
+    "accessPermissionsKey": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/definitions/accessPermissionsRoute" },
+      "propertyNames": {
+        "pattern": "^(\\w*(@\\w*)\/)(([\\w]+\/)([-\\w]+)?)?$"
+      },
+      "description": "A mapping of LSW paths and permitted methods; paths should have trailling slashes and each of the methods specified will be allowed to be executed against the exact path as well as any of it's descedents unless there is another permission declaration that better matches the path.",
+      "examples": ["@PUBLIC/", "APPS@PUBLIC/", "APPS@PUBLIC/KEYID/", "APPS@PUBLIC/KEYID/CACHEID"]
+    },
+    "accessPermissions": {
+      "type": "object",
+      "properties": {
+        "default": { "$ref": "#/definitions/accessPermissionsKey" }
+      },
+      "additionalProperties": { "$ref": "#/definitions/accessPermissionsKey" },
+      "propertyNames": { "$ref": "#/definitions/keyID" },
+      "required": ["default"],
+      "title": "LSW access permissions",
+      "description": "A mapping of keys and their corresponding route permissions."
+    },
+    "requestPermissionsKey": {
+      "type": "object",
+      "properties": {
+        "maxConcurrency":   { "type": "integer", "minimum": -1, "default": 1 },
+        "maxExecutionTime": { "type": "integer", "minimum": -1, "default": 300 }
+      },
+      "additionalProperties": false,
+      "required": ["maxConcurrency", "maxExecutionTime"]
+    },
+    "requestPermissions": {
+      "type": "object",
+      "properties": {
+        "default": { "$ref": "#/definitions/requestPermissionsKey" }
+      },
+      "additionalProperties": { "$ref": "#/definitions/requestPermissionsKey" },
+      "propertyNames": { "$ref": "#/definitions/keyID" },
+      "required": ["default"],
+      "title": "LSW request permissions",
+      "description": "A mapping of keys and their corresponding route permissions."
+    },
+    "queryPermissionsKey": {
+      "type": "object",
+      "properties": {
+        "maxLifetime":    { "type": "integer", "minimum": -1, "default": 0 },
+        "maxPriority":    { "type": "integer", "minimum": 0, "default": 10 },
+        "maxConcurrency": { "type": "integer", "minimum": -1, "default": 1 }
+      },
+      "additionalProperties": false,
+      "required": ["maxLifetime", "maxPriority", "maxConcurrency"]
+    },
+    "queryPermissions": {
+      "type": "object",
+      "properties": {
+        "default": { "$ref": "#/definitions/queryPermissionsKey" }
+      },
+      "additionalProperties": { "$ref": "#/definitions/queryPermissionsKey" },
+      "propertyNames": { "$ref": "#/definitions/keyID" },
+      "required": ["default"],
+      "title": "LSW query permissions",
+      "description": "A mapping of keys and their corresponding query permissions."
+    },
+    "tokenPermissionsKey": {
+      "type": "object",
+      "properties": {
+        "exp": {
+          "type": "object",
+          "properties": {
+            "min": {
+              "type": ["integer", "string"],
+              "minimum": 0,
+              "pattern": "^(now)|([+-](\\d+\\w+))|(\\d+)$",
+              "default": "now"
+            },
+            "max": {
+              "type": ["integer", "string"],
+              "minimum": 0,
+              "pattern": "^(now)|([+-](\\d+\\w+))|(\\d+)$",
+              "default": "+1d"
+            },
+            "default": {
+              "type": ["integer", "string"],
+              "minimum": 0,
+              "pattern": "^(now)|([+-](\\d+\\w+))|(\\d+)$",
+              "default": "+1d"
+            }
+          },
+          "required": ["min", "max", "default"],
+          "additionalProperties": false
+        },
+        "nbf": {
+          "type": "object",
+          "properties": {
+            "min": {
+              "type": ["integer", "string"],
+              "minimum": 0,
+              "pattern": "^(now)|([+-](\\d+\\w+))|(\\d+)$",
+              "default": "now"
+            },
+            "max": {
+              "type": ["integer", "string"],
+              "minimum": 0,
+              "pattern": "^(now)|([+-](\\d+\\w+))|(\\d+)$",
+              "default": "+1d"
+            },
+            "default": {
+              "type": ["integer", "string"],
+              "minimum": 0,
+              "pattern": "^(now)|([+-](\\d+\\w+))|(\\d+)$",
+              "default": "+1d"
+            }
+          },
+          "required": ["min", "max", "default"],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": ["exp", "nbf"]
+    },
+    "tokenPermissions": {
+      "type": "object",
+      "properties": {
+        "default": { "$ref": "#/definitions/tokenPermissionsKey" }
+      },
+      "additionalProperties": { "$ref": "#/definitions/tokenPermissionsKey" },
+      "propertyNames": { "$ref": "#/definitions/keyID" },
+      "required": ["default"],
+      "title": "LSW token permissions",
+      "description": "A mapping of keys and their corresponding token permissions."
+    }
+  },
+  "properties": {
+    "secretKey": { "type": "string" },
+    "permissions": {
+      "type": "object",
+      "properties": {
+        "access": { "$ref": "#/definitions/accessPermissions" },
+        "request": { "$ref": "#/definitions/requestPermissions" },
+        "query": { "$ref": "#/definitions/queryPermissions" },
+        "token": { "$ref": "#/definitions/tokenPermissions" }
+      },
+      "additionalProperties": false,
+      "required": ["access"]
+    },
+    "maxTokensPerSource": { "type": "integer", "minimum": 1, "default": 1 },
+    "clockSkewTolerance": { "type": "integer", "minimum": 0, "default": 30 }
+  },
+  "additionalProperties": false,
+  "required": ["secretKey", "permissions"]
+}

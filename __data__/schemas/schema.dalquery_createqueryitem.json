@@ -1,0 +1,12 @@
+{
+  "$id": "schema.dalquery_createqueryitem.json",
+  "title": "DalQueryCreateQueryItem",
+  "type": "object",
+  "properties": {
+    "op": { "type": "string", "const": "create" },
+    "query": { "$ref": "schema.dal_params.json#/properties/query" },
+    "data": { "$ref": "schema.cache_base.json" }
+  },
+  "additionalProperties": false,
+  "required": ["op", "query", "data"]
+}

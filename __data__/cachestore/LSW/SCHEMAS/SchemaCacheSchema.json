@@ -1,0 +1,24 @@
+{
+  "id": "SCHEMACACHESCHEMA",
+  "keyID": "{{pubKeyID}}",
+	"metadata": {
+		"type": "lsw://schemas@LSW/{{pubKeyID}}/SchemaCacheSchema",
+		"title": "SchemaCache JSON schema",
+		"summary": "A JSON schema that all SchemaCaches must adhere to.",
+		"permissions": {}
+	},
+	"contents": {
+    "schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "lsw://schemas@LSW/{{pubKeyID}}/SchemaCacheSchema#schema",
+      "type": "object",
+      "properties": {
+        "schema": {
+          "$ref": "lsw://schemas@LSW/{{pubKeyID}}/SchemaCacheSchema#schema"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["schema"]
+    }
+	}
+}

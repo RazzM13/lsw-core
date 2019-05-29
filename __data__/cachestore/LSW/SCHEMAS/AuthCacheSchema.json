@@ -1,0 +1,25 @@
+{
+  "id": "AUTHCACHESCHEMA",
+  "keyID": "{{pubKeyID}}",
+	"metadata": {
+		"type": "lsw://schemas@LSW/{{pubKeyID}}/SchemaCacheSchema",
+		"title": "AuthCache JSON schema",
+		"summary": "A JSON schema that all AuthCaches must adhere to.",
+		"permissions": {}
+	},
+	"contents": {
+    "schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "lsw://schemas@LSW/{{pubKeyID}}/AuthCacheSchema#schema",
+      "type": "object",
+      "definitions": {
+      },
+      "properties": {
+        "token": { "type": "string" },
+        "isActive": { "type": "boolean" }
+      },
+      "additionalProperties": false,
+      "required": ["token", "isActive"]
+    }
+	}
+}
